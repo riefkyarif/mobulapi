@@ -29,3 +29,20 @@ exports.tampilberdasarid = function(req,res){
         }
     });
 };
+
+//menambahkan data pengguna
+exports.adduser = function (req, res) {
+    var LastName = req.body.LastName;
+    var FirstName = req.body.FirstName;
+    var Address = req.body.Address;
+    var City = req.body.City;
+
+    connection.query('INSERT INTO pengguna (LastName,FirstName,Address,City) VALUES(?,?,?,?)',
+        [LastName, FirstName, Address, City], function (error, rows, fields) {
+            if (error) {
+                console.log(error);
+            } else {
+                response.ok("Succes Adding Data!", res)
+            }
+        });
+};

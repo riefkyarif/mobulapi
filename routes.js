@@ -10,5 +10,8 @@ module.exports = function(app){
         .get(jsonku.tampilsemuapengguna);
 
     app.route('/show/:id')
-        .get(jsonku.tampilberdasarid);   
+        .get(jsonku.tampilberdasarid); 
+        
+    app.route('/add')
+        .post(jsonku.adduser);
 }
