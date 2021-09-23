@@ -13,5 +13,5 @@ module.exports = function(app){
         .get(jsonku.tampilberdasarid); 
         
     app.route('/add')
-        .post(jsonku.adduser);
+        .post(jsonku.tambahuser);
 }
