@@ -42,3 +42,72 @@ exports.registrasi = function(req,res){
         }
     })
 }
+
+// controller untuk login
+exports.login = function (req, res) {
+    var post = {
+         password: req.body.password,
+         email: req.body.email
+    }
+
+    var query = "SELECT * FROM ?? WHERE ??=? AND ??=?";
+    var table = ["users", "password", md5(post.password), "email", post.email];
+
+    query = mysql.format(query, table);
+
+    connection.query(query, function (error, rows) {
+         if (error) {
+              console.log(error);
+         } else {
+              if (rows.length == 1) {
+                   var token = jwt.sign({ rows }, config.secret, {
+                        //ubah expires dalam ms
+                        expiresIn: '2400000' //40 mins
+                   });
+
+                   id_user = rows[0].id;
+                   //1 tambahan row username
+                   username = rows[0].username;
+                   //2 tambahan row role
+                   role = rows[0].role;
+
+                   //3 variable expires
+                   // var expired = 30000
+                   var expired = 2400000
+                   var isVerified = rows[0].isVerified
+
+                   var data = {
+                        id_user: id_user,
+                        access_token: token,
+                        ip_address: ip.address()
+                   }
+
+                   var query = "INSERT INTO ?? SET ?";
+                   var table = ["token_access"];
+
+                   query = mysql.format(query, table);
+                   connection.query(query, data, function (error, rows) {
+                        if (error) {
+                             console.log(error);
+                        } else {
+                             res.json({
+                                  success: true,
+                                  message: 'Token JWT tergenerate!',
+                                  token: token,
+                                  //4 tambahkan expired time
+                                  expires: expired,
+                                  currUser: data.id_user,
+                                  user: username,
+                                  //3 tambahkan role
+                                  role: role,
+                                  isVerified: isVerified
+                             });
+                        }
+                   });
+              }
+              else {
+                   res.json({ "Error": true, "Message": "Email atau password salah!" });
+              }
+         }
+    });
+}
